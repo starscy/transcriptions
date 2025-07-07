@@ -1,0 +1,14 @@
+{
+    "name": "starscy/my_first_package",
+    "autoload": {
+        "psr-4": {
+            "Starscy\\MyFirstPackage\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "starscy"
+        }
+    ],
+    "require": {}
+}

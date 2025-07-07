@@ -1,0 +1,1116 @@
+WEBVTT
+
+1
+00:00:02.740 --> 00:00:04.400
+If you'd like to come along for the ride,
+
+2
+00:00:04.400 --> 00:00:05.560
+today for Laracasts,
+
+3
+00:00:05.560 --> 00:00:07.650
+I need to build a small little package
+
+4
+00:00:07.650 --> 00:00:10.820
+for handling and processing transcriptions.
+
+5
+00:00:10.820 --> 00:00:12.040
+And I'll warn you ahead of time,
+
+6
+00:00:12.040 --> 00:00:14.090
+I don't have much experience in this area,
+
+7
+00:00:14.090 --> 00:00:16.420
+so we will be figuring it out together.
+
+8
+00:00:16.420 --> 00:00:18.682
+All I know is that when I use a service
+
+9
+00:00:18.682 --> 00:00:21.750
+to transcribe a Laracasts video,
+
+10
+00:00:21.750 --> 00:00:24.740
+in response, I get this VTT file
+
+11
+00:00:24.740 --> 00:00:28.740
+that I think stands for video text track,
+
+12
+00:00:28.740 --> 00:00:30.180
+something like that.
+
+13
+00:00:30.180 --> 00:00:31.860
+And it takes the shape of this.
+
+14
+00:00:31.860 --> 00:00:36.480
+So the whole file is organized into sections
+
+15
+00:00:36.480 --> 00:00:38.810
+where a timestamp is associated
+
+16
+00:00:38.810 --> 00:00:39.980
+with a bit of text.
+
+17
+00:00:39.980 --> 00:00:43.670
+So this text occurs exactly at this timestamp.
+
+18
+00:00:43.670 --> 00:00:45.060
+So as you can imagine for the site,
+
+19
+00:00:45.060 --> 00:00:46.630
+I want to show a transcription
+
+20
+00:00:46.630 --> 00:00:48.200
+in a slide-out modal,
+
+21
+00:00:48.200 --> 00:00:50.900
+where you can scan a text version
+
+22
+00:00:50.900 --> 00:00:52.270
+of the entire video.
+
+23
+00:00:52.270 --> 00:00:53.740
+And if you click on any portion,
+
+24
+00:00:53.740 --> 00:00:56.800
+it will load that exact segment of the video.
+
+25
+00:00:56.800 --> 00:00:58.170
+I think that'd be pretty cool.
+
+26
+00:00:58.170 --> 00:00:59.003
+And actually,
+
+27
+00:00:59.003 --> 00:01:01.660
+I've already had Adrian whip up a design
+
+28
+00:01:01.660 --> 00:01:03.270
+that you can see here.
+
+29
+00:01:03.270 --> 00:01:04.103
+Now I will warn you,
+
+30
+00:01:04.103 --> 00:01:05.300
+we're not gonna build the front end
+
+31
+00:01:05.300 --> 00:01:06.133
+in this series.
+
+32
+00:01:06.133 --> 00:01:06.966
+We're only focused
+
+33
+00:01:06.966 --> 00:01:09.970
+on the backend Composer package.
+
+34
+00:01:09.970 --> 00:01:10.930
+But ultimately,
+
+35
+00:01:10.930 --> 00:01:12.810
+it will look something like this.
+
+36
+00:01:12.810 --> 00:01:14.300
+And again, you click here
+
+37
+00:01:14.300 --> 00:01:15.650
+and it will load that portion
+
+38
+00:01:15.650 --> 00:01:16.630
+of the video,
+
+39
+00:01:16.630 --> 00:01:18.150
+which again, I think is pretty cool.
+
+40
+00:01:18.150 --> 00:01:19.111
+I hope it's helpful.
+
+41
+00:01:19.111 --> 00:01:20.020
+Okay.
+
+42
+00:01:20.020 --> 00:01:21.680
+Now, before we get started,
+
+43
+00:01:21.680 --> 00:01:23.860
+I need to figure out my terminology.
+
+44
+00:01:23.860 --> 00:01:26.040
+'Cause sometimes I use, incorrectly,
+
+45
+00:01:26.040 --> 00:01:27.265
+I use captions
+
+46
+00:01:27.265 --> 00:01:28.640
+or subtitles
+
+47
+00:01:28.640 --> 00:01:30.927
+or transcriptions interchangeably,
+
+48
+00:01:30.927 --> 00:01:33.350
+and I don't quite think they're the same thing.
+
+49
+00:01:33.350 --> 00:01:35.480
+So let's do transcriptions,
+
+50
+00:01:35.480 --> 00:01:38.840
+versus captions, versus subtitles.
+
+51
+00:01:38.840 --> 00:01:40.230
+And let's see.
+
+52
+00:01:40.230 --> 00:01:41.443
+Yeah, right here.
+
+53
+00:01:44.240 --> 00:01:45.297
+"Captions are the display
+
+54
+00:01:45.297 --> 00:01:47.040
+of a text version of speech
+
+55
+00:01:47.040 --> 00:01:47.873
+within a video.
+
+56
+00:01:47.873 --> 00:01:49.980
+It's superimposed onto the video."
+
+57
+00:01:49.980 --> 00:01:51.610
+Okay, so captions are the text
+
+58
+00:01:51.610 --> 00:01:53.580
+that displays on top of a video.
+
+59
+00:01:53.580 --> 00:01:57.240
+Okay, subtitles are the translation.
+
+60
+00:01:57.240 --> 00:01:58.560
+Okay, I kinda knew this.
+
+61
+00:01:58.560 --> 00:02:01.310
+Subtitles are the video's dialogue,
+
+62
+00:02:01.310 --> 00:02:03.764
+but translated into a different language.
+
+63
+00:02:03.764 --> 00:02:06.230
+So that's not what I'm doing here.
+
+64
+00:02:06.230 --> 00:02:08.410
+Finally, "transcriptions are a text-based version."
+
+65
+00:02:08.410 --> 00:02:10.170
+Yeah, kind of the same thing.
+
+66
+00:02:10.170 --> 00:02:11.240
+That was originally produced
+
+67
+00:02:11.240 --> 00:02:12.073
+in video.
+
+68
+00:02:12.073 --> 00:02:12.906
+It can be displayed
+
+69
+00:02:12.906 --> 00:02:14.460
+below the original video.
+
+70
+00:02:14.460 --> 00:02:16.377
+Okay, so it sounds like transcriptions
+
+71
+00:02:16.377 --> 00:02:18.480
+are really what I want here.
+
+72
+00:02:18.480 --> 00:02:21.300
+The caption is what displays on the video.
+
+73
+00:02:21.300 --> 00:02:23.070
+The transcription will be
+
+74
+00:02:23.070 --> 00:02:25.100
+in our slide out modal here.
+
+75
+00:02:25.100 --> 00:02:26.538
+That makes perfect sense.
+
+76
+00:02:26.538 --> 00:02:28.620
+And things like that are important,
+
+77
+00:02:28.620 --> 00:02:29.610
+because they will determine
+
+78
+00:02:29.610 --> 00:02:30.820
+what the class names are,
+
+79
+00:02:30.820 --> 00:02:32.660
+what the package name is,
+
+80
+00:02:32.660 --> 00:02:34.720
+what your method calls might be.
+
+81
+00:02:34.720 --> 00:02:35.860
+It's very important.
+
+82
+00:02:35.860 --> 00:02:37.360
+Okay, so let's get started.
+
+83
+00:02:37.360 --> 00:02:39.120
+I'm going to begin by thinking
+
+84
+00:02:39.120 --> 00:02:40.940
+of this as a composer package,
+
+85
+00:02:40.940 --> 00:02:42.700
+even if I never release it to the world.
+
+86
+00:02:42.700 --> 00:02:43.750
+Even if it's only meant
+
+87
+00:02:43.750 --> 00:02:45.930
+to be used by me, that's fine.
+
+88
+00:02:45.930 --> 00:02:46.780
+When you build these things,
+
+89
+00:02:46.780 --> 00:02:48.950
+always start off by scratching your own itch.
+
+90
+00:02:48.950 --> 00:02:51.650
+Don't try to plan for every potential use case.
+
+91
+00:02:51.650 --> 00:02:55.673
+I know there's all these different transcription file types
+
+92
+00:02:55.673 --> 00:02:57.277
+that you might need to work with,
+
+93
+00:02:57.277 --> 00:02:59.070
+but I don't need to worry about that.
+
+94
+00:02:59.070 --> 00:03:00.640
+It's irrelevant to my needs,
+
+95
+00:03:00.640 --> 00:03:03.050
+and I only want to scratch my own itch right now.
+
+96
+00:03:03.050 --> 00:03:05.190
+We can always expand it later.
+
+97
+00:03:05.190 --> 00:03:06.860
+So I will call this, "Laracasts."
+
+98
+00:03:06.860 --> 00:03:08.710
+I'll put it under the Laracasts namespace,
+
+99
+00:03:08.710 --> 00:03:11.300
+and we'll do transcriptions.
+
+100
+00:03:11.300 --> 00:03:13.273
+And I'll leave the others blank.
+
+101
+00:03:15.220 --> 00:03:16.660
+Yeah.
+
+102
+00:03:16.660 --> 00:03:17.890
+Okay, cool.
+
+103
+00:03:17.890 --> 00:03:21.400
+So that'll set up my composer.json file.
+
+104
+00:03:21.400 --> 00:03:25.324
+Next, I want to require PHPUnit.
+
+105
+00:03:25.324 --> 00:03:30.060
+PHPUnit for development.
+
+106
+00:03:30.060 --> 00:03:31.520
+We're going to use test-driven development
+
+107
+00:03:31.520 --> 00:03:32.390
+to drive this out
+
+108
+00:03:32.390 --> 00:03:34.250
+and I think that'll be a great way to go.
+
+109
+00:03:34.250 --> 00:03:36.060
+And then finally,
+
+110
+00:03:36.060 --> 00:03:39.390
+I want a quick PHPUnit configuration file.
+
+111
+00:03:39.390 --> 00:03:40.890
+So let me remember.
+
+112
+00:03:40.890 --> 00:03:42.110
+What is that called?
+
+113
+00:03:42.110 --> 00:03:43.523
+Generate configuration.
+
+114
+00:03:47.720 --> 00:03:48.860
+Bootstrap script.
+
+115
+00:03:48.860 --> 00:03:51.170
+Again, usually the defaults are correct.
+
+116
+00:03:51.170 --> 00:03:53.500
+So, notice tests go in the test directory,
+
+117
+00:03:53.500 --> 00:03:55.090
+source files go in the src directory,
+
+118
+00:03:55.090 --> 00:03:56.023
+and that's fine.
+
+119
+00:03:57.000 --> 00:03:58.290
+Close that out.
+
+120
+00:03:58.290 --> 00:03:59.123
+And I'll go ahead
+
+121
+00:03:59.123 --> 00:04:00.500
+and build up my directory structure.
+
+122
+00:04:00.500 --> 00:04:02.130
+Src,
+
+123
+00:04:02.130 --> 00:04:04.513
+and then another one for tests.
+
+124
+00:04:06.180 --> 00:04:08.103
+Okay, then for this example here,
+
+125
+00:04:08.103 --> 00:04:09.090
+I'm going to put this
+
+126
+00:04:09.090 --> 00:04:10.733
+into a stubs directory.
+
+127
+00:04:13.760 --> 00:04:14.593
+'Cause maybe I'll work
+
+128
+00:04:14.593 --> 00:04:16.150
+that into one of my tests,
+
+129
+00:04:16.150 --> 00:04:18.520
+or maybe even do another one here.
+
+130
+00:04:18.520 --> 00:04:19.970
+Like let's duplicate this,
+
+131
+00:04:19.970 --> 00:04:22.913
+and we'll call it basic example.
+
+132
+00:04:24.360 --> 00:04:25.193
+And then I'm going
+
+133
+00:04:25.193 --> 00:04:26.670
+to condense this down drastically.
+
+134
+00:04:26.670 --> 00:04:30.067
+We'll just make it something like that.
+
+135
+00:04:30.067 --> 00:04:35.067
+"Here is a example of a VTT file."
+
+136
+00:04:35.850 --> 00:04:37.110
+And that's it.
+
+137
+00:04:37.110 --> 00:04:38.530
+Okay, let's get started.
+
+138
+00:04:38.530 --> 00:04:40.640
+I'm going to build my first class,
+
+139
+00:04:40.640 --> 00:04:42.760
+and we're working with transcriptions,
+
+140
+00:04:42.760 --> 00:04:45.820
+so why don't we call it, "TranscriptionsTest."
+
+141
+00:04:45.820 --> 00:04:47.120
+And the namespace, I guess,
+
+142
+00:04:47.120 --> 00:04:48.567
+will be, "Tests."
+
+143
+00:04:50.900 --> 00:04:52.993
+So this will extend PHPUnit,
+
+144
+00:04:55.260 --> 00:04:56.980
+and we'll do our first test.
+
+145
+00:04:56.980 --> 00:04:59.390
+What is the simplest thing I can do here?
+
+146
+00:04:59.390 --> 00:05:00.710
+How about something as simple as
+
+147
+00:05:00.710 --> 00:05:03.860
+it_loads_vtt_file.
+
+148
+00:05:03.860 --> 00:05:06.450
+All right, let's write the code I wish I had.
+
+149
+00:05:06.450 --> 00:05:08.970
+Maybe we'll have a Transcription class,
+
+150
+00:05:08.970 --> 00:05:11.820
+and I will give it the path to a file.
+
+151
+00:05:11.820 --> 00:05:16.820
+So this would be something like "stubs/basic-example.vtt.
+
+152
+00:05:17.490 --> 00:05:19.114
+And what do I expect?
+
+153
+00:05:19.114 --> 00:05:22.763
+Well, I expect to load this full string.
+
+154
+00:05:23.880 --> 00:05:24.713
+Now, I could assert
+
+155
+00:05:24.713 --> 00:05:26.260
+that it just contains a portion,
+
+156
+00:05:26.260 --> 00:05:28.950
+or I could do something like
+
+157
+00:05:28.950 --> 00:05:31.540
+expected equals file_get_contents.
+
+158
+00:05:31.540 --> 00:05:32.993
+So, I'm going to do it again.
+
+159
+00:05:37.000 --> 00:05:41.970
+And then I can say this assertEquals expected
+
+160
+00:05:43.380 --> 00:05:46.850
+and then compare that against the transcription.
+
+161
+00:05:46.850 --> 00:05:48.780
+So yeah, at this point,
+
+162
+00:05:48.780 --> 00:05:49.840
+Transcription::load()
+
+163
+00:05:49.840 --> 00:05:51.690
+basically just does file_get_contents.
+
+164
+00:05:51.690 --> 00:05:52.590
+So in this case,
+
+165
+00:05:52.590 --> 00:05:53.930
+it looks a little suspicious
+
+166
+00:05:53.930 --> 00:05:56.620
+whenever your test is just reproducing the class
+
+167
+00:05:56.620 --> 00:05:57.540
+you're testing.
+
+168
+00:05:57.540 --> 00:05:58.880
+It's suspicious,
+
+169
+00:05:58.880 --> 00:05:59.840
+but in this case,
+
+170
+00:05:59.840 --> 00:06:01.860
+I don't think it's really a problem.
+
+171
+00:06:01.860 --> 00:06:03.340
+Okay, so we know this is going to fail,
+
+172
+00:06:03.340 --> 00:06:05.140
+but let's give it a try.
+
+173
+00:06:05.140 --> 00:06:06.280
+And yeah.
+
+174
+00:06:06.280 --> 00:06:07.980
+"Transcription not found on line 12."
+
+175
+00:06:07.980 --> 00:06:10.600
+So it has no idea what this is.
+
+176
+00:06:10.600 --> 00:06:11.433
+Okay, let's go ahead
+
+177
+00:06:11.433 --> 00:06:14.633
+and create our transcription class.
+
+178
+00:06:16.160 --> 00:06:17.390
+There we go.
+
+179
+00:06:17.390 --> 00:06:18.710
+And then I'm going to use that.
+
+180
+00:06:18.710 --> 00:06:21.053
+So use transcription.
+
+181
+00:06:22.080 --> 00:06:23.800
+Give it another run.
+
+182
+00:06:23.800 --> 00:06:27.040
+Okay, so now class Laracasts\Transcriptions\Transcription
+
+183
+00:06:27.040 --> 00:06:28.350
+is still not found,
+
+184
+00:06:28.350 --> 00:06:29.183
+and that's probably
+
+185
+00:06:29.183 --> 00:06:30.016
+because we need
+
+186
+00:06:30.016 --> 00:06:31.720
+to configure the autoloader.
+
+187
+00:06:31.720 --> 00:06:34.330
+So we're using PSR for autoloading.
+
+188
+00:06:34.330 --> 00:06:35.920
+So I will say autoload
+
+189
+00:06:36.990 --> 00:06:39.349
+and this will be PSR-4.
+
+190
+00:06:39.349 --> 00:06:43.520
+And let's say our namespace was Laracasts\Transcriptions.
+
+191
+00:06:43.520 --> 00:06:44.750
+And where's that located?
+
+192
+00:06:44.750 --> 00:06:47.140
+In the src directory.
+
+193
+00:06:47.140 --> 00:06:48.653
+Okay, let's run it again.
+
+194
+00:06:49.610 --> 00:06:50.810
+And it still can't find it,
+
+195
+00:06:50.810 --> 00:06:52.010
+but that's just because we have
+
+196
+00:06:52.010 --> 00:06:55.210
+to run "composer dump autoload".
+
+197
+00:06:55.210 --> 00:06:57.330
+I wish we didn't have to do that,
+
+198
+00:06:57.330 --> 00:06:58.770
+but it's required.
+
+199
+00:06:58.770 --> 00:07:01.140
+Okay, so we run it again.
+
+200
+00:07:01.140 --> 00:07:02.580
+Aha, we've changed the error.
+
+201
+00:07:02.580 --> 00:07:04.070
+So we're making progress.
+
+202
+00:07:04.070 --> 00:07:05.680
+Now we're trying to call a load() method
+
+203
+00:07:05.680 --> 00:07:07.570
+that doesn't exist.
+
+204
+00:07:07.570 --> 00:07:09.960
+Okay, let's click through
+
+205
+00:07:09.960 --> 00:07:13.920
+and this is a static initializer probably.
+
+206
+00:07:13.920 --> 00:07:16.720
+And this will expect a path to the file.
+
+207
+00:07:16.720 --> 00:07:18.250
+All right, we give it a run.
+
+208
+00:07:18.250 --> 00:07:20.427
+File get contents tests.
+
+209
+00:07:20.427 --> 00:07:21.330
+Oh, test test.
+
+210
+00:07:21.330 --> 00:07:22.163
+That's not right.
+
+211
+00:07:22.163 --> 00:07:23.260
+I bet you saw this
+
+212
+00:07:23.260 --> 00:07:25.593
+and you've been waiting for me to figure it out.
+
+213
+00:07:27.573 --> 00:07:29.660
+Okay, let's give it another run.
+
+214
+00:07:29.660 --> 00:07:30.493
+Here we go.
+
+215
+00:07:30.493 --> 00:07:31.962
+Failed asserting that null matches
+
+216
+00:07:31.962 --> 00:07:34.130
+the contents of that file.
+
+217
+00:07:34.130 --> 00:07:35.640
+Again, we're changing the error
+
+218
+00:07:35.640 --> 00:07:36.640
+and whenever you do that,
+
+219
+00:07:36.640 --> 00:07:39.210
+you're making little bits of progress usually.
+
+220
+00:07:39.210 --> 00:07:40.420
+So what's going on here?
+
+221
+00:07:40.420 --> 00:07:41.520
+Void method.
+
+222
+00:07:41.520 --> 00:07:42.353
+Yeah, okay.
+
+223
+00:07:42.353 --> 00:07:44.560
+That's going to return a string.
+
+224
+00:07:44.560 --> 00:07:46.370
+So how do we make this work?
+
+225
+00:07:46.370 --> 00:07:47.203
+Well, again,
+
+226
+00:07:47.203 --> 00:07:48.690
+this is where I said it's a bit suspicious
+
+227
+00:07:48.690 --> 00:07:53.013
+because right now load() will just start
+
+228
+00:07:54.690 --> 00:07:56.350
+with file_get_contents.
+
+229
+00:07:56.350 --> 00:07:58.450
+But my guess is we'll probably change this,
+
+230
+00:07:58.450 --> 00:08:02.280
+because this isn't overly useful right now.
+
+231
+00:08:02.280 --> 00:08:04.720
+"The test does not have a coverage annotation,
+
+232
+00:08:04.720 --> 00:08:06.140
+but it's expected."
+
+233
+00:08:06.140 --> 00:08:07.343
+I don't want to do that.
+
+234
+00:08:08.390 --> 00:08:09.573
+Let's turn that off.
+
+235
+00:08:10.710 --> 00:08:12.410
+Run it again,
+
+236
+00:08:12.410 --> 00:08:13.880
+and we get green,
+
+237
+00:08:13.880 --> 00:08:15.080
+but we don't have colors.
+
+238
+00:08:15.080 --> 00:08:17.563
+So let's turn on colors here.
+
+239
+00:08:19.750 --> 00:08:21.350
+
+240
+00:08:21.350 --> 00:08:22.570
+There we go.
+
+241
+00:08:22.570 --> 00:08:23.670
+So now that I'm at green,
+
+242
+00:08:23.670 --> 00:08:26.010
+I can refactor this a little bit.
+
+243
+00:08:26.010 --> 00:08:28.140
+Really, I think load() should return
+
+244
+00:08:28.140 --> 00:08:30.620
+to me an instance of Transcription.
+
+245
+00:08:30.620 --> 00:08:33.570
+So why don't we start by saving this
+
+246
+00:08:33.570 --> 00:08:36.883
+to $file and that will be a string.
+
+247
+00:08:37.820 --> 00:08:39.220
+And then I want to set it,
+
+248
+00:08:39.220 --> 00:08:40.480
+but of course I can't do this,
+
+249
+00:08:40.480 --> 00:08:43.010
+because we're in a static method.
+
+250
+00:08:43.010 --> 00:08:44.688
+So this is where we could,
+
+251
+00:08:44.688 --> 00:08:49.210
+within here, initialize our class
+
+252
+00:08:49.210 --> 00:08:50.343
+and then set it,
+
+253
+00:08:52.110 --> 00:08:54.430
+and then return the instance.
+
+254
+00:08:54.430 --> 00:08:57.230
+Okay, but now it's not going to work, right?
+
+255
+00:08:57.230 --> 00:08:58.210
+We run the test,
+
+256
+00:08:58.210 --> 00:09:00.470
+and now load is returning an object
+
+257
+00:09:00.470 --> 00:09:02.590
+rather than the string.
+
+258
+00:09:02.590 --> 00:09:04.750
+But still, I kind of like being able
+
+259
+00:09:04.750 --> 00:09:06.520
+to call load,
+
+260
+00:09:06.520 --> 00:09:07.440
+and then if I ever need
+
+261
+00:09:07.440 --> 00:09:08.750
+to use the response there,
+
+262
+00:09:08.750 --> 00:09:10.523
+it immediately gives me the string.
+
+263
+00:09:11.910 --> 00:09:13.360
+If you want that to work,
+
+264
+00:09:13.360 --> 00:09:16.850
+what we could do is set __toString()
+
+265
+00:09:16.850 --> 00:09:18.360
+to declare what should happen
+
+266
+00:09:18.360 --> 00:09:21.380
+when this object is used as a string.
+
+267
+00:09:21.380 --> 00:09:22.270
+And if that's the case,
+
+268
+00:09:22.270 --> 00:09:24.337
+maybe we just return $file
+
+269
+00:09:24.337 --> 00:09:26.630
+and that will return a string.
+
+270
+00:09:26.630 --> 00:09:27.910
+Of course.
+
+271
+00:09:27.910 --> 00:09:29.480
+So we give that another run
+
+272
+00:09:29.480 --> 00:09:30.440
+and it's passing.
+
+273
+00:09:30.440 --> 00:09:33.340
+But now we changed it up just a little bit.
+
+274
+00:09:33.340 --> 00:09:34.950
+So I think this is a good stopping point
+
+275
+00:09:34.950 --> 00:09:36.140
+for lesson one.
+
+276
+00:09:36.140 --> 00:09:38.100
+We figured out the terminology,
+
+277
+00:09:38.100 --> 00:09:40.680
+we set up our initial package configuration,
+
+278
+00:09:40.680 --> 00:09:43.240
+and then we wrote our first basic test.
+
+279
+00:09:43.240 --> 00:09:45.153
+In the next episode, we'll keep going.

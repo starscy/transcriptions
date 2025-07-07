@@ -1,0 +1,5 @@
+.idea/
+.history/
+/vendor/
+/Icon*
+.DS_Store
