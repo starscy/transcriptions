@@ -39,4 +39,17 @@ class Transcription
             fn ($line) => Line::valid($line)
         ));
     }
+
+    public function htmlLines(): string
+    {
+        $htmlLines = array_map(function (Line $line) {
+            preg_match('/^\d{2}:(\d{2}:\d{2})\.\d{3}/', $line->timestamp, $matches);
+
+        var_dump($matches);
+
+            return '<a href="?time=' . $matches[1] . '">'.$line->body.'</a>';
+        }, $this->lines());
+
+        return implode("\n", $htmlLines);
+    }
 }

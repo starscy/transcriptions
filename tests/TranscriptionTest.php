@@ -50,4 +50,21 @@ class TranscriptionTest extends TestCase
         $this->assertCount(2, $transcription->lines());
 
     }
+
+    #[Test]
+    public function it_render_the_lines_as_html()
+    {
+        $file = __DIR__ . '/stubs/basic_example.vtt';
+
+        $transcription = Transcription::load($file);
+
+        $result = $transcription->htmlLines();
+
+        $this->assertEquals(
+            '<a href="?time=00:02">here</a>' . "\n" .
+            '<a href="?time=00:04">example</a>',
+            $result
+        );
+
+    }
 }
