@@ -5,18 +5,15 @@ namespace Starscy\MyFirstPackage;
 class Transcription
 {
     protected array $lines;
+
+    public function __construct(array $lines)
+    {
+        $this->lines = $this->discardInvalidLines(array_map('trim', $lines));
+    }
+
     public static function load(string $path): self
     {
-        if (!file_exists($path)) {
-            throw new \InvalidArgumentException("File not found: $path");
-        }
-
-        $instance = new static();
-
-        //$instance->lines = file($path);
-        $instance->lines = $instance->discardInvalidLines(file($path));
-
-        return $instance;
+        return new static(file($path));
     }
 
     public function lines(): array
@@ -37,7 +34,6 @@ class Transcription
 
     public function discardInvalidLines(array $lines): array
     {
-        $lines = array_map('trim', $lines);
         return array_values(array_filter(
             $lines,
             fn ($line) => Line::valid($line)
