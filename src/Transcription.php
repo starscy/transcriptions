@@ -42,13 +42,10 @@ class Transcription
 
     public function htmlLines(): string
     {
-        $htmlLines = array_map(function (Line $line) {
-            preg_match('/^\d{2}:(\d{2}:\d{2})\.\d{3}/', $line->timestamp, $matches);
-
-        var_dump($matches);
-
-            return '<a href="?time=' . $matches[1] . '">'.$line->body.'</a>';
-        }, $this->lines());
+        $htmlLines = array_map(
+            fn (Line $line) => $line->toHtml(),
+            $this->lines()
+        );
 
         return implode("\n", $htmlLines);
     }
