@@ -57,7 +57,7 @@ class TranscriptionTest extends TestCase
         $this->assertEquals(
             '<a href="?time=00:02">here</a>' . "\n" .
             '<a href="?time=00:04">example</a>',
-            $this->transcription->htmlLines()
+            $this->transcription->lines()->html()
         );
 
     }
