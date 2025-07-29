@@ -3,7 +3,8 @@
     "description": "Load and parse VTT files",
     "authors": [
         {
-            "name": "starscy"
+            "name": "starscy",
+            "email": "starscy@rambler.ru"
         }
     ],
     "autoload": {
