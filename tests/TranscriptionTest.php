@@ -70,4 +70,13 @@ class TranscriptionTest extends TestCase
         $this->assertInstanceOf(\ArrayAccess::class, $lines);
         $this->assertInstanceOf(Line::class, $lines[0]);
     }
+
+    #[Test]
+    public function it_can_render_a_json_file()
+    {
+        $lines = $this->transcription->lines();
+
+        $this->assertInstanceOf(\JsonSerializable::class, $lines);
+        $this->assertJson(json_encode($lines));
+    }
 }
