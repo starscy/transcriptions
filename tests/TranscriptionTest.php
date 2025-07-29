@@ -61,4 +61,13 @@ class TranscriptionTest extends TestCase
         );
 
     }
+
+    #[Test]
+    public function it_supports_array_access()
+    {
+        $lines = $this->transcription->lines();
+
+        $this->assertInstanceOf(\ArrayAccess::class, $lines);
+        $this->assertInstanceOf(Line::class, $lines[0]);
+    }
 }
